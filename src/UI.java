@@ -9,7 +9,6 @@ import java.awt.*;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.util.*;
-import java.util.List;
 
 public class UI extends JFrame {
 
@@ -29,9 +28,6 @@ public class UI extends JFrame {
 
     private JLabel frameLabel;
     private JLabel patternLabel;
-    private JLabel chartLabel;
-    private JLabel logLabel;
-    private JLabel excelLabel;
     private JLabel pageFaultLabel;
 
 
@@ -79,7 +75,6 @@ public class UI extends JFrame {
         comboBox.addItem("FIFO");
         comboBox.addItem("OPTIMAL");
         comboBox.addItem("LRU");
-        comboBox.addItem("MRU");
         comboBox.addItem("LFU");
         comboBox.addItem("MFU");
 
@@ -149,9 +144,6 @@ public class UI extends JFrame {
 
                     } else if (comboBox.getSelectedItem() == "LRU") {
                         state = LRU(page, i);
-
-                    } else if (comboBox.getSelectedItem() == "MRU"){
-
 
                     } else if (comboBox.getSelectedItem() == "LFU"){
                         state = LFU(page, i);
@@ -236,7 +228,6 @@ public class UI extends JFrame {
                 return HIT;
             }
         }
-
         // 페이지 정보 저정
         newPage.pid = Page.pageCnt++;
         newPage.data = page;
@@ -245,7 +236,6 @@ public class UI extends JFrame {
         if (onMem == 0) {
             index = 0;
         }
-
         // FAULT -> 메모리가 남아있다면 메모리에 페이지를 올림
         if (onMem < frameSize) {
             onMem++;
@@ -283,10 +273,8 @@ public class UI extends JFrame {
                 return HIT;
             }
         }
-
         newPage.pid = Page.pageCnt++;
         newPage.data = page;
-
         // page fault
         if (onMem < frameSize) {
             onMem++;
@@ -307,14 +295,21 @@ public class UI extends JFrame {
                 }
             }
 
-            boolean flag = true;
+            int flagNum = 0;
             for(int j=0 ; j<frameSize ; j++){
                 if(arr[j] == -999){
-                    flag = false;
+                    flagNum++;
                 }
             }
 
-            if(flag == false){
+            if(flagNum == 1){
+                for(int i=0 ; i<frameSize ; i++){
+                    if(arr[i] == -999){
+                        arr[i] = 999;
+                    }
+                }
+            }
+            else if(flagNum > 1){
                 for(int i = 0 ; i<frameSize ; i++){
                     for(int j = 0; j<patterns.length() ; j++){
                         if(arr[i] != -999){
@@ -371,7 +366,6 @@ public class UI extends JFrame {
         }
         // kick
         else {
-            System.out.println("cur " + curIndex);
             for (int i = 0; i < frameSize; i++) {
                 for (int j = curIndex-1; j > -1 ; j--) {
                     if (arr[i] != -999) {
@@ -381,11 +375,6 @@ public class UI extends JFrame {
                         arr[i] = j - curIndex;
                     }
                 }
-            }
-
-            System.out.println("===== arr =====");
-            for(int i=0;i<arr.length;i++){
-                System.out.println(i + ": " + arr[i]);
             }
 
             int max = arr[0];
@@ -433,7 +422,6 @@ public class UI extends JFrame {
         }
         // kick
         else {
-            System.out.println("cur " + curIndex);
             for (int i = 0; i < frameSize; i++) {
                 for (int j = 0; j < curIndex ; j++) {
                     if (list.get(i).data == patterns.charAt(j)) {
@@ -504,10 +492,8 @@ public class UI extends JFrame {
             int maxLast = last[0];
             for (int k = 0; k < arr.length; k++) {
                 if (Math.abs(arr[k]) > max || ((Math.abs(arr[k]) == max) && Math.abs(last[k]) > maxLast)) {
-                    System.out.println("index cur : " + max + " " + maxLast);
                     max = Math.abs(arr[k]);
                     maxLast = Math.abs(last[k]);
-                    System.out.println(max + " " + maxLast + "===");
                     maxIndex = k;
                 }
             }
